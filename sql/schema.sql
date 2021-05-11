@@ -23,6 +23,6 @@ CREATE TABLE departments (
 CREATE TABLE roles (
     id INT PRIMARY KEY,
     title VARCHAR(30),
-    salary DECIMAL(6,2),
+    salary DECIMAL,
     department_id INT
 );
