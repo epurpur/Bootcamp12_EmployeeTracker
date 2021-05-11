@@ -1,9 +1,30 @@
-/**
- * CONNECTION TO DATABASE GOES HERE + INQUIRER LOGIC
- */
-
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+
+//DATABASE CONNECTION
+const connection = mysql.createConnection({
+    host: 'localhost',
+
+    //port #
+    post: 3306,
+
+    //username
+    user: 'root',
+
+    //my credentials
+    password: 'battlebot',
+    database: 'employee_tracker'
+});
+
+connection.connect((err) => {
+    if (err) throw err;
+    initialQuestions();
+})
+
+
+
+
+
 
 const initialQuestions = () => {
 // Asks initial question about what user 
@@ -54,9 +75,20 @@ const departments = () => {
                 'View total budget of a department***'
             ]
         })
-        .then((answer) => {
-            console.log(answer.deptResponse);
-            //DEPENDING ON RESULT, DO DB QUERIES HERE
+        //START HERE######################
+        .then((answer) =>  {
+            switch(answer.deptResponse) {
+                case 'View all departments':
+                    connection.query(
+                        'SELECT * FROM departments',
+                        (err, res) => {
+                            if (res[0]) {
+                                console.log(`Departments: ${res}`);
+                        } else {
+                            console.error('Error!')
+                        }
+                    );
+            }
         })
 }
 
@@ -76,6 +108,9 @@ const roles = () => {
         .then((answer) => {
             console.log(answer.rolesResponse)
             //DEPENDING ON RESULT, DO DB QUERIES HERE
+
+            connection.end();
+
         })
 }
 
@@ -96,10 +131,12 @@ const employees = () => {
         .then((answer) => {
             console.log(answer.employeesResponse);
             //DEPENDING ON RESULT, DO DB QUERIES HERE
+
+            connection.end();
+
         })
 }
 
 
-initialQuestions();
 
 
