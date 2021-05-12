@@ -180,6 +180,48 @@ const employees = () => {
                     break;
 
                 case 'Add an employee':
+
+                    inquirer
+                        .prompt([
+                            {
+                                name: 'name',
+                                type: 'input',
+                                message: 'Enter employee name (ex: Joe Smith): '
+                            },
+                            {
+                                name: 'role',
+                                type: 'list',
+                                message: 'Choose employee role: ',
+                                choices: ['Developer', 'Salesperson', 'Engineer', 'Manager'],
+                            },
+                        ])
+                        .then((response) => {
+                            //creates random employee id between 1-1000
+                            const id = Math.floor(Math.random() * 1000) + 1
+                            //creates random manager_id between 1-4
+                            const manager_id = Math.floor(Math.random() * 4) + 1    
+
+                            //break apart name into first and last name
+                            let name = response.name.split(" ");
+                            const firstName = name[0];
+                            const lastName = name[1];
+                            
+                            //set role_id depending on role
+                            let role_id;
+                            switch(response.role) {
+                                case 'Developer': role_id = 1; break;
+                                case 'Salesperson': role_id = 2; break;
+                                case 'Engineer': role_id = 3; break;
+                                case 'Manager': role_id = 4; break;
+                            }
+
+                            console.log(`Adding employee record: ${id}, ${firstName}, ${lastName}, ${role_id}, ${manager_id}`);
+                            
+                            //insert values into database via SQL statement
+                            connection.query(
+                                `INSERT INTO employees (id, first_name, last_name, role_id, manager_id) VALUES (${id}, '${firstName}', '${lastName}', ${role_id}, ${manager_id})`
+                            )
+                        })
                     break;
 
                 case 'Update employee role':
