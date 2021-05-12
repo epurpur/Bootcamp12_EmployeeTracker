@@ -114,7 +114,6 @@ const roles = () => {
             choices: [
                 'View all roles',
                 'Add a role',
-                'Update employee roles'
             ]
         })
         .then((answer) => {
@@ -243,7 +242,7 @@ const employees = () => {
                         })
                         .then((answer) => {
                             //split answer into first and last name for SQL query
-                            let name = response.name.split(" ");
+                            let name = answer.employeeName.split(" ");
                             const firstName = name[0];
                             const lastName = name[1];
                             //make DB connection to get record for chosen employee
@@ -251,11 +250,49 @@ const employees = () => {
                                 `SELECT * FROM employees WHERE first_name='${firstName}' AND last_name='${lastName}'`,
                                 (err, res) => {
                                     if (res) {
-                                        console.log(res);
-                                    } else {
-                                        console.log('Invalid employee name!');
-                                        initialQuestions();
-                                    }
+                                        //translate role_id to text
+                                        let job;
+                                        switch(res[0].role_id) {
+                                            case 1: job='Developer'; break;
+                                            case 2: job='Salesperson'; break;
+                                            case 3: job='Engineer'; break;
+                                            case 4: job='Manager'; break;
+                                        }
+                                        
+                                        console.log(`\n Current role of ${answer.employeeName} is: ${job} \n`);
+
+                                        //make DB connection to get choices of roles
+                                        connection.query('SELECT * FROM roles', (err, res) => {
+                                            let roles = []
+                                            res.forEach((role) => {roles.push(role.title)});
+
+                                            //prompt user for new role choice:
+                                            inquirer
+                                                .prompt({
+                                                    name: 'newRole',
+                                                    type: 'list',
+                                                    message: 'Choose new role for employee: ',
+                                                    choices: roles,
+                                                })
+                                                .then((response) => {
+                                                    console.log('New role is: ', response.newRole);
+
+                                                    //translate role choice back into number for role_id
+                                                    let role_id;
+                                                    switch(response.newRole) {
+                                                        case 'Developer': role_id = 1; break;
+                                                        case 'Salesperson': role_id = 2; break;
+                                                        case 'Engineer': role_id = 3; break;
+                                                        case 'Manager': role_id = 4; break;
+                                                    }
+
+                                                    //make update to DB record (finally!)
+                                                    console.log('Updating role... \n');
+                                                    connection.query(`UPDATE employees SET role_id=${role_id} WHERE first_name='${firstName}' AND last_name='${lastName}' `);
+                                                    
+                                                    initialQuestions();
+                                                })})
+                                    } 
                                 }
                             )
                         })
