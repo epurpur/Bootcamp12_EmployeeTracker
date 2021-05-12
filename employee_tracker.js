@@ -17,6 +17,7 @@ const connection = mysql.createConnection({
     database: 'employee_tracker'
 });
 
+//make connection to database to begin application
 connection.connect((err) => {
     if (err) throw err;
     initialQuestions();
@@ -161,6 +162,7 @@ const employees = () => {
         })
         .then((answer) => {
             switch(answer.employeesResponse) {
+                //views all employees in table
                 case 'View all employees':
                     //write SQL query
                     connection.query(
@@ -180,54 +182,118 @@ const employees = () => {
                     break;
 
                 case 'Add an employee':
+                    //start by making DB query to get employee roles
+                    connection.query(
+                        'SELECT * FROM roles', 
+                        (err, res) => {
+                            //create array of roles to choose from. Later to be used in inquirer 
+                            let roles = [];
+                            res.forEach((role) => {roles.push(role.title)});
+                            
+                            //adds employee to table
+                            inquirer
+                                .prompt([
+                                    {
+                                        name: 'name',
+                                        type: 'input',
+                                        message: 'Enter employee name (ex: Joe Smith): '
+                                    },
+                                    {
+                                        name: 'role',
+                                        type: 'list',
+                                        message: 'Choose employee role: ',
+                                        choices: ['Developer', 'Salesperson', 'Engineer', 'Manager'],
+                                    },
+                                ])
+                                .then((response) => {
+                                    //creates random employee id between 1-1000
+                                    const id = Math.floor(Math.random() * 1000) + 1
+                                    //creates random manager_id between 1-4
+                                    const manager_id = Math.floor(Math.random() * 4) + 1    
 
+                                    //break apart name into first and last name
+                                    let name = response.name.split(" ");
+                                    const firstName = name[0];
+                                    const lastName = name[1];
+                                    
+                                    //set role_id depending on role
+                                    let role_id;
+                                    switch(response.role) {
+                                        case 'Developer': role_id = 1; break;
+                                        case 'Salesperson': role_id = 2; break;
+                                        case 'Engineer': role_id = 3; break;
+                                        case 'Manager': role_id = 4; break;
+                                    }
+
+                                    console.log(`\n Adding employee record: ${id}, ${firstName}, ${lastName}, ${role_id}, ${manager_id} \n`);
+                                    
+                                    //insert values into database via SQL statement
+                                    connection.query(`INSERT INTO employees (id, first_name, last_name, role_id, manager_id) VALUES (${id}, '${firstName}', '${lastName}', ${role_id}, ${manager_id})`);
+                                    initialQuestions();
+                                })});
+                    break;
+
+                case 'Update employee role':
+                    // Ask user for employee name
                     inquirer
-                        .prompt([
-                            {
-                                name: 'name',
-                                type: 'input',
-                                message: 'Enter employee name (ex: Joe Smith): '
-                            },
-                            {
-                                name: 'role',
-                                type: 'list',
-                                message: 'Choose employee role: ',
-                                choices: ['Developer', 'Salesperson', 'Engineer', 'Manager'],
-                            },
-                        ])
-                        .then((response) => {
-                            //creates random employee id between 1-1000
-                            const id = Math.floor(Math.random() * 1000) + 1
-                            //creates random manager_id between 1-4
-                            const manager_id = Math.floor(Math.random() * 4) + 1    
-
-                            //break apart name into first and last name
+                        .prompt({
+                            name: 'employeeName',
+                            type: 'input',
+                            message: 'Enter name of employee to update: '
+                        })
+                        .then((answer) => {
+                            //split answer into first and last name for SQL query
                             let name = response.name.split(" ");
                             const firstName = name[0];
                             const lastName = name[1];
-                            
-                            //set role_id depending on role
-                            let role_id;
-                            switch(response.role) {
-                                case 'Developer': role_id = 1; break;
-                                case 'Salesperson': role_id = 2; break;
-                                case 'Engineer': role_id = 3; break;
-                                case 'Manager': role_id = 4; break;
-                            }
-
-                            console.log(`Adding employee record: ${id}, ${firstName}, ${lastName}, ${role_id}, ${manager_id}`);
-                            
-                            //insert values into database via SQL statement
+                            //make DB connection to get record for chosen employee
                             connection.query(
-                                `INSERT INTO employees (id, first_name, last_name, role_id, manager_id) VALUES (${id}, '${firstName}', '${lastName}', ${role_id}, ${manager_id})`
+                                `SELECT * FROM employees WHERE first_name='${firstName}' AND last_name='${lastName}'`,
+                                (err, res) => {
+                                    if (res) {
+                                        console.log(res);
+                                    } else {
+                                        console.log('Invalid employee name!');
+                                        initialQuestions();
+                                    }
+                                }
                             )
                         })
                     break;
 
-                case 'Update employee role':
-                    break;
-
                 case 'Delete employee':
+                    connection.query(
+                        'SELECT * FROM employees',
+                        (err, res) => {
+                            //create array of employee names to choose from. Later to be used in inquirer
+                            let employees = [];
+                            res.forEach((emp) => {
+                                let fullName = emp.first_name + ' ' + emp.last_name;
+                                employees.push(fullName);
+                            });
+                            inquirer
+                            //prompt user to choose employee to delete
+                                .prompt({
+                                    name: 'empDelete',
+                                    type: 'list',
+                                    message: 'Which employee do you want to delete?',
+                                    choices: employees,
+                                })
+                                .then((answer) => {
+                                    // split user choice into first and last name
+                                    fullName = answer.empDelete.split(" ")
+                                    const first = fullName[0];
+                                    const last = fullName[1];
+
+                                    console.log(`\n Deleting employee: ${answer.empDelete} \n`);
+                                    //make database connection to delete record of chosen employee
+                                    connection.query(
+                                        `DELETE FROM employees WHERE first_name='${first}' AND last_name='${last}'`
+                                    )
+                                    initialQuestions();
+                                })
+                        }
+                    )
                     break;
 
                 case 'View employees by manager***':
