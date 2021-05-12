@@ -94,6 +94,24 @@ const departments = () => {
                     break;
 
                 case 'Add a department':
+                    //ask for new department name
+                    inquirer
+                        .prompt({
+                            name: 'newDeptName',
+                            type: 'input',
+                            message: 'Add new department name: '
+                        })
+                        .then((response) => {
+                            //creates random id number between 1-100
+                            const id = Math.floor(Math.random() * 100) + 1    
+
+                            //make connection to DB to make new department
+                            connection.query(`INSERT INTO departments (id, name) VALUES (${id}, '${response.newDeptName}')`);
+                            console.log(`Adding new department: ${response.newDeptName}`);
+
+                            initialQuestions();
+                        })
+
                     break;
 
                 case 'View total budget of a department***':
@@ -135,11 +153,34 @@ const roles = () => {
                     break;
 
                 case 'Add a role': 
-                    console.log('Adding a role');
-                    break;
+                    //ask for new role name
+                    inquirer
+                        .prompt([
+                            {
+                                name: 'newRoleName',
+                                type: 'input',
+                                message: 'Add new role name: ',
+                            },
+                            {
+                                name: 'newRoleSalary',
+                                type: 'input',
+                                message: 'Enter salary for new role: ',
+                            }
+                            ])
+                        .then((response) => {
+                            //creates random id number between 1-100
+                            const id = Math.floor(Math.random() * 100) + 1    
 
-                case 'Update employee roles':
-                    console.log('Updating employee role');
+                            //creates random department_id between 1-4
+                            const dept_id = Math.floor(Math.random() * 4) + 1    
+
+                            //make connection to DB and make new role
+                            connection.query(`INSERT INTO roles (id, title, salary, dept_id) VALUES (${id}, '${response.newRoleName}', ${response.newRoleSalary}, ${dept_id})`);
+                        
+                            console.log(`\n Inserting new role of: ${response.newRoleName} \n`);
+
+                            initialQuestions();
+                        })
                     break;
             }
         })
