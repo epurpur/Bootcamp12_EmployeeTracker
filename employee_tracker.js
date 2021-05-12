@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 
+
 //DATABASE CONNECTION
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -20,10 +21,6 @@ connection.connect((err) => {
     if (err) throw err;
     initialQuestions();
 })
-
-
-
-
 
 
 const initialQuestions = () => {
@@ -56,6 +53,7 @@ const initialQuestions = () => {
 
             case 'Exit':
                 console.log('Exiting...');
+                connection.end();
                 break;
         }
     });
@@ -75,22 +73,35 @@ const departments = () => {
                 'View total budget of a department***'
             ]
         })
-        //START HERE######################
-        .then((answer) =>  {
+        .then((answer) => {
             switch(answer.deptResponse) {
                 case 'View all departments':
+                    //write SQL query
                     connection.query(
                         'SELECT * FROM departments',
                         (err, res) => {
-                            if (res[0]) {
-                                console.log(`Departments: ${res}`);
-                        } else {
-                            console.error('Error!')
-                        }
-                    );
+                            //if response exists
+                            if (res) {
+                                console.log('\n List of Departments: \n');
+                                res.forEach((response) => {console.log(response.name)});
+                                console.log('');
+                                initialQuestions();
+                            } else {
+                                console.log(`Error! ... ${err}`)
+                            }
+                        })
+                    break;
+
+                case 'Add a department':
+                    break;
+
+                case 'View total budget of a department***':
+                    console.log('viewing total budget of department')
+                    break;
             }
         })
 }
+
 
 const roles = () => {
 //asks questions related to roles
@@ -106,11 +117,31 @@ const roles = () => {
             ]
         })
         .then((answer) => {
-            console.log(answer.rolesResponse)
-            //DEPENDING ON RESULT, DO DB QUERIES HERE
+            switch(answer.rolesResponse) {
+                case 'View all roles':
+                    connection.query(
+                        'SELECT * FROM roles',
+                        (err, res) => {
+                            //if response exists
+                            if (res) {
+                                console.log('\n List of Roles: \n');
+                                res.forEach((response) => {console.log(response.title)});
+                                console.log('')
+                                initialQuestions();
+                            } else {
+                                console.log(`Error! ... ${err}`);
+                            }
+                        })
+                    break;
 
-            connection.end();
+                case 'Add a role': 
+                    console.log('Adding a role');
+                    break;
 
+                case 'Update employee roles':
+                    console.log('Updating employee role');
+                    break;
+            }
         })
 }
 
@@ -129,11 +160,38 @@ const employees = () => {
             ]
         })
         .then((answer) => {
-            console.log(answer.employeesResponse);
-            //DEPENDING ON RESULT, DO DB QUERIES HERE
+            switch(answer.employeesResponse) {
+                case 'View all employees':
+                    //write SQL query
+                    connection.query(
+                        'SELECT * FROM employees',
+                        (err, res) => {
+                            //if response exists
+                            if (res) {
+                                console.log('\n List of Employees: \n');
+                                res.forEach((response) => {console.log(`${response.first_name} ${response.last_name}`)});
+                                console.log('');
+                                initialQuestions();
+                            } else {
+                                console.log(`Error! ... ${err}`);
+                            }
+                        }
+                    )
+                    break;
 
-            connection.end();
+                case 'Add an employee':
+                    break;
 
+                case 'Update employee role':
+                    break;
+
+                case 'Delete employee':
+                    break;
+
+                case 'View employees by manager***':
+                    break;
+
+            }
         })
 }
 
