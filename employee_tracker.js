@@ -102,11 +102,9 @@ const departments = () => {
                             message: 'Add new department name: '
                         })
                         .then((response) => {
-                            //creates random id number between 1-100
-                            const id = Math.floor(Math.random() * 100) + 1    
 
                             //make connection to DB to make new department
-                            connection.query(`INSERT INTO departments (id, name) VALUES (${id}, '${response.newDeptName}')`);
+                            connection.query(`INSERT INTO departments (name) VALUES ('${response.newDeptName}')`);
                             console.log(`Adding new department: ${response.newDeptName}`);
 
                             initialQuestions();
@@ -116,6 +114,11 @@ const departments = () => {
 
                 case 'View total budget of a department***':
                     console.log('viewing total budget of department')
+                    
+                    //SQL STATEMENT FOR TOTAL BUDGET OF DEPARTMENT
+                    // SELECT SUM(R.salary)
+                    // FROM roles as R, employees as E
+                    // WHERE R.id = 2 AND E.role_id = 2;
                     break;
             }
         })
@@ -168,14 +171,11 @@ const roles = () => {
                             }
                             ])
                         .then((response) => {
-                            //creates random id number between 1-100
-                            const id = Math.floor(Math.random() * 100) + 1    
-
                             //creates random department_id between 1-4
                             const dept_id = Math.floor(Math.random() * 4) + 1    
 
                             //make connection to DB and make new role
-                            connection.query(`INSERT INTO roles (id, title, salary, dept_id) VALUES (${id}, '${response.newRoleName}', ${response.newRoleSalary}, ${dept_id})`);
+                            connection.query(`INSERT INTO roles (title, salary, department_id) VALUES ('${response.newRoleName}', ${response.newRoleSalary}, ${dept_id})`);
                         
                             console.log(`\n Inserting new role of: ${response.newRoleName} \n`);
 
@@ -265,10 +265,10 @@ const employees = () => {
                                         case 'Manager': role_id = 4; break;
                                     }
 
-                                    console.log(`\n Adding employee record: ${id}, ${firstName}, ${lastName}, ${role_id}, ${manager_id} \n`);
+                                    console.log(`\n Adding employee record: ${firstName}, ${lastName}, ${role_id}, ${manager_id} \n`);
                                     
                                     //insert values into database via SQL statement
-                                    connection.query(`INSERT INTO employees (id, first_name, last_name, role_id, manager_id) VALUES (${id}, '${firstName}', '${lastName}', ${role_id}, ${manager_id})`);
+                                    connection.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${firstName}', '${lastName}', ${role_id}, ${manager_id})`);
                                     initialQuestions();
                                 })});
                     break;
