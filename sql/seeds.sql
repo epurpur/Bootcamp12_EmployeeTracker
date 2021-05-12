@@ -35,7 +35,7 @@ VALUES  ('Marketing'),
 
 
 
-INSERT INTO roles (id, title, salary, dept_id)
+INSERT INTO roles (title, salary, department_id)
 VALUES  ('Developer', 75000, 3),
 		('Salesperson', 50000, 2),
 		('Engineer', 70000, 3),
