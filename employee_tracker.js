@@ -376,7 +376,6 @@ const employees = () => {
 
                 case 'View employees by manager***':
                     break;
-
             }
         })
 }
