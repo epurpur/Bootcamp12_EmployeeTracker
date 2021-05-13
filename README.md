@@ -3,6 +3,12 @@
 
   Employee Tracker
 
+
+  ## Link to Demo
+  - [Click Here](https://virginia.zoom.us/rec/share/PuAl7L9lXf4TcyJe6O7v1-vrNXtMA-Mupup650DtBuL0c1l0K3Ix_LjAAVWq4wak.h-3-sqibUOWw_GVz)
+  - Passcode: &f1!uQAX
+
+
   ## License
 
   [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) : [View License](https://www.gnu.org/licenses/gpl-3.0)
@@ -43,4 +49,9 @@
   ## Questions 
 
   For issues, questions, and comments please contact epurpur@gmail.com or visit [https://github.com/epurpur](https://github.com/epurpur) 
+  
+  ## Preview of Application
+  
+  
+  ![](./Assets/TeamProfile.png)
   
