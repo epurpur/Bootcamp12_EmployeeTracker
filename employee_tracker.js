@@ -71,7 +71,7 @@ const departments = () => {
             choices: [
                 'View all departments',
                 'Add a department',
-                'View total budget of a department***'
+                'View total budget of a department'
             ]
         })
         .then((answer) => {

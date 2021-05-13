@@ -11,8 +11,8 @@ CREATE TABLE employees (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(30),
     last_name VARCHAR(30),
-    role_id INT NOT NULL,    
-    manager_id INT   
+    role_id INT NOT NULL,      
+    manager_id INT,          
 );
 
 CREATE TABLE departments (
@@ -24,5 +24,7 @@ CREATE TABLE roles (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     title VARCHAR(30),
     salary DECIMAL,
-    department_id INT NOT NULL 
+    department_id INT NOT NULL,
 );
+
+ALTER TABLE employees ADD FOREIGN KEY (role_id) REFERENCES roles(id);
