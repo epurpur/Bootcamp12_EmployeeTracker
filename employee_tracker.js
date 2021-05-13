@@ -112,13 +112,40 @@ const departments = () => {
 
                     break;
 
-                case 'View total budget of a department***':
-                    console.log('viewing total budget of department')
-                    
-                    //SQL STATEMENT FOR TOTAL BUDGET OF DEPARTMENT
-                    // SELECT SUM(R.salary)
-                    // FROM roles as R, employees as E
-                    // WHERE R.id = 2 AND E.role_id = 2;
+                case 'View total budget of a department':
+                    inquirer
+                        .prompt({
+                            name: 'deptBudget',
+                            type: 'input',
+                            message: "Which department's budget do you want to see?"
+                        })
+                        .then((response) => {
+                            //translate response to department IDs
+                            let dept_id;
+                            switch(response.deptBudget) {
+                                case 'Marketing': dept_id = 1; break;
+                                case 'Sales': dept_id = 2; break;
+                                case 'Development': dept_id = 3; break;
+                                case 'Engineering': dept_id = 4; break;
+                            }
+
+                            connection.query(
+                                `SELECT SUM(R.salary) as total
+                                FROM roles as R, employees as E
+                                WHERE R.id = ${dept_id} AND E.role_id = ${dept_id}`,
+                                (err, res) => {
+                                    //format response as dollar amount
+                                    const formatter = new Intl.NumberFormat('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD',
+                                      });
+
+                                    console.log(`\n Total budget for ${response.deptBudget} is ${formatter.format(res[0].total)} \n`)
+                                    
+                                    initialQuestions();
+                                });
+                        })
+ 
                     break;
             }
         })
@@ -197,7 +224,6 @@ const employees = () => {
                 'Add an employee',
                 'Update employee role',
                 'Delete employee',
-                'View employees by manager***'
             ]
         })
         .then((answer) => {
@@ -372,9 +398,6 @@ const employees = () => {
                                 })
                         }
                     )
-                    break;
-
-                case 'View employees by manager***':
                     break;
             }
         })
