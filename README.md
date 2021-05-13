@@ -53,5 +53,5 @@
   ## Preview of Application
   
   
-  ![](./Assets/TeamProfile.png)
+  ![](./Assets/employeetracker.png)
   
